@@ -1,5 +1,6 @@
 const connectDatabase = require('../database/db');
 const User = require('../models/user');
+const buildResponse = require('../utils/util');
 
 module.exports.handler = async (event, context) => {
     context.callbackWaitsForEmptyEventLoop = false;
@@ -9,23 +10,14 @@ module.exports.handler = async (event, context) => {
         const {email} = event.pathParameters;
         userObj = await User.findOne({email});
         if(userObj) {
-            return {
-                statusCode: 200,
-                body: JSON.stringify(userObj)
-            }
+            return buildResponse(200, userObj);
         } else {
-            return {
-                statusCode: 404,
-                body: JSON.stringify({msg: "User not found"})
-            }
+            return buildResponse(404, {msg: "User not found"});
         }
         
     } catch (error) {
         console.error(error);
-        return {
-            statusCode: error.statusCode || 500,
-            body: JSON.stringify({error: error.message})
-        }
+        return buildResponse(error.statusCode || 500, {error: error.message});
     }
 }
 

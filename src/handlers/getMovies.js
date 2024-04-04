@@ -1,5 +1,6 @@
 const connectDatabase = require('../database/db');
 const Movie = require('../models/movie');
+const buildResponse = require('../utils/util');
 
 module.exports.handler = async (event, context) => {
     context.callbackWaitsForEmptyEventLoop = false;
@@ -8,16 +9,10 @@ module.exports.handler = async (event, context) => {
         connectDatabase();
 
         responseObj = await Movie.find();
-        return {
-            statusCode: 200,
-            body: JSON.stringify(responseObj)
-        }
+        return buildResponse(200, responseObj);
     } catch (error) {
         console.error(error);
-        return {
-            statusCode: error.statusCode || 500,
-            body: JSON.stringify({error: error.message})
-        }
+        return buildResponse(error.statusCode || 500, {error: error.message});
     }
 }
 
